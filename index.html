@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRON & IRON | Elite Fitness</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        h1, h2, h3, .brand { font-family: 'Oswald', sans-serif; }
+        body { font-family: 'Inter', sans-serif; }
+        [x-cloak] { display: none !important; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white" x-data="gymApp()" x-cloak>
+
+    <nav class="fixed w-full z-50 bg-black/90 border-b border-zinc-800">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+            <div class="text-2xl font-bold tracking-widest text-orange-500">IRON<span class="text-white">&</span>IRON</div>
+            <div class="hidden md:flex space-x-8 uppercase text-sm font-semibold tracking-wide">
+                <a href="#home" class="hover:text-orange-500 transition">Home</a>
+                <a href="#classes" class="hover:text-orange-500 transition">Classes</a>
+                <a href="#bmi" class="hover:text-orange-500 transition">BMI Calculator</a>
+                <a href="#pricing" class="hover:text-orange-500 transition">Pricing</a>
+            </div>
+            <button class="bg-orange-600 hover:bg-orange-700 px-6 py-2 rounded font-bold uppercase text-sm transition">Join Now</button>
+        </div>
+    </nav>
+
+    <section id="home" class="relative h-screen flex items-center justify-center overflow-hidden">
+        <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&q=80&w=2000" class="absolute inset-0 w-full h-full object-cover opacity-40" alt="Gym Interior">
+        <div class="relative z-10 text-center px-4">
+            <h1 class="text-6xl md:text-9xl uppercase italic mb-4 leading-none">Limitless<br><span class="text-orange-500">Strength</span></h1>
+            <p class="text-zinc-400 text-lg md:text-xl max-w-2xl mx-auto mb-8 font-light">The premier destination for athletes and bodybuilders. 24/7 access, elite equipment, and expert coaching.</p>
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <a href="#classes" class="bg-white text-black px-10 py-4 font-bold uppercase tracking-tighter hover:bg-orange-500 transition">View Class Schedule</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="classes" class="py-24 px-6 max-w-7xl mx-auto">
+        <h2 class="text-4xl uppercase mb-12 border-l-4 border-orange-500 pl-4">Weekly Schedule</h2>
+        <div class="flex flex-wrap gap-2 mb-8">
+            <template x-for="day in ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']">
+                <button @click="activeDay = day" 
+                        :class="activeDay === day ? 'bg-orange-600 border-orange-600' : 'bg-transparent border-zinc-700'"
+                        class="px-6 py-2 border rounded-full text-sm font-bold transition" 
+                        x-text="day"></button>
+            </template>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <template x-for="cls in schedule[activeDay]">
+                <div class="bg-zinc-900 p-6 rounded-lg border border-zinc-800 hover:border-orange-500 transition group">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="text-orange-500 font-bold" x-text="cls.time"></span>
+                        <span class="text-xs bg-zinc-800 px-2 py-1 rounded uppercase" x-text="cls.level"></span>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2 group-hover:text-orange-500 transition" x-text="cls.name"></h3>
+                    <p class="text-zinc-500 text-sm mb-4" x-text="cls.trainer"></p>
+                    <button class="w-full py-2 bg-zinc-800 font-bold uppercase text-xs hover:bg-white hover:text-black transition">Book Spot</button>
+                </div>
+            </template>
+        </div>
+    </section>
+
+    <section id="bmi" class="py-24 bg-zinc-900">
+        <div class="max-w-4xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <h2 class="text-4xl uppercase mb-6">Calculate Your <span class="text-orange-500">BMI</span></h2>
+                <p class="text-zinc-400 mb-8 leading-relaxed">Track your health progress with our instant BMI tool. Body Mass Index is a simple calculation using a person's height and weight.</p>
+                <div class="space-y-4">
+                    <input type="number" x-model="height" placeholder="Height (cm)" class="w-full bg-black border border-zinc-700 p-4 rounded focus:border-orange-500 outline-none">
+                    <input type="number" x-model="weight" placeholder="Weight (kg)" class="w-full bg-black border border-zinc-700 p-4 rounded focus:border-orange-500 outline-none">
+                    <button @click="calculateBMI()" class="w-full bg-orange-600 py-4 font-bold uppercase tracking-widest">Calculate</button>
+                </div>
+            </div>
+            <div class="bg-black p-8 rounded-xl border border-zinc-800 text-center">
+                <div class="text-zinc-500 uppercase text-xs font-bold mb-2">Your Result</div>
+                <div class="text-6xl font-bold mb-2 text-orange-500" x-text="bmiResult || '0.0'"></div>
+                <div class="text-xl uppercase font-bold text-white mb-4" x-text="bmiStatus"></div>
+                <div class="h-2 bg-zinc-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-orange-500 transition-all duration-500" :style="`width: ${Math.min((bmiResult/40)*100, 100)}%`"></div >
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="py-24 px-6 max-w-7xl mx-auto text-center" x-data="{ billing: 'monthly' }">
+        <h2 class="text-4xl uppercase mb-4">Choose Your Plan</h2>
+        <div class="flex items-center justify-center gap-4 mb-12">
+            <span :class="billing === 'monthly' ? 'text-white' : 'text-zinc-500'">Monthly</span>
+            <button @click="billing = (billing === 'monthly' ? 'yearly' : 'monthly')" class="w-12 h-6 bg-orange-600 rounded-full relative">
+                <div class="absolute w-4 h-4 bg-white rounded-full top-1 transition-all" :class="billing === 'monthly' ? 'left-1' : 'left-7'"></div>
+            </button>
+            <span :class="billing === 'yearly' ? 'text-white' : 'text-zinc-500'">Yearly (Save 20%)</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <template x-for="plan in plans">
+                <div class="bg-zinc-900 p-10 border border-zinc-800 rounded-2xl relative overflow-hidden group hover:border-orange-500 transition">
+                    <div x-show="plan.popular" class="absolute top-0 right-0 bg-orange-600 text-[10px] font-bold uppercase px-3 py-1">Best Value</div>
+                    <h3 class="text-xl font-bold uppercase mb-4" x-text="plan.name"></h3>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold" x-text="'$' + (billing === 'monthly' ? plan.price : Math.floor(plan.price * 0.8 * 12))"></span>
+                        <span class="text-zinc-500 text-sm" x-text="billing === 'monthly' ? '/mo' : '/yr'"></span>
+                    </div>
+                    <ul class="text-left text-zinc-400 text-sm space-y-4 mb-8">
+                        <template x-for="feat in plan.features">
+                            <li class="flex items-center gap-2">
+                                <svg class="w-4 h-4 text-orange-500" fill="currentColor" viewBox="0 0 20 20"><path d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"></path></svg>
+                                <span x-text="feat"></span>
+                            </li>
+                        </template>
+                    </ul>
+                    <button class="w-full py-4 border border-zinc-700 font-bold uppercase hover:bg-orange-600 hover:border-orange-600 transition">Get Started</button>
+                </div>
+            </template>
+        </div>
+    </section>
+
+    <footer class="py-12 border-t border-zinc-900 text-center text-zinc-600 text-xs uppercase tracking-widest">
+        &copy; 2026 Iron & Iron Fitness. No Excuses.
+    </footer>
+
+    <script>
+        function gymApp() {
+            return {
+                activeDay: 'Mon',
+                height: null,
+                weight: null,
+                bmiResult: null,
+                bmiStatus: 'Enter Details',
+                schedule: {
+                    'Mon': [{name: 'Power Lifting', time: '08:00 AM', trainer: 'C. Bumstead', level: 'Adv'}, {name: 'HIIT Cardio', time: '10:00 AM', trainer: 'J. Michaels', level: 'Int'}],
+                    'Tue': [{name: 'Yoga Flow', time: '07:00 AM', trainer: 'S. Ray', level: 'Beg'}, {name: 'CrossFit', time: '05:00 PM', trainer: 'R. Froning', level: 'Adv'}],
+                    'Wed': [{name: 'Leg Day', time: '09:00 AM', trainer: 'T. Platz', level: 'Int'}, {name: 'Boxing', time: '06:00 PM', trainer: 'M. Ali', level: 'Int'}],
+                    'Thu': [{name: 'Zumba', time: '10:00 AM', trainer: 'B. Perez', level: 'Beg'}],
+                    'Fri': [{name: 'Upper Body', time: '08:00 AM', trainer: 'A. Schwarzenegger', level: 'Adv'}],
+                    'Sat': [{name: 'Open Gym', time: 'All Day', trainer: 'Staff', level: 'All'}]
+                },
+                plans: [
+                    { name: 'Basic', price: 29, features: ['Access to Gym', 'Standard Lockers', 'Free WiFi'], popular: false },
+                    { name: 'Pro', price: 59, features: ['24/7 Access', 'Free Classes', 'Guest Passes', 'Sauna Access'], popular: true },
+                    { name: 'Elite', price: 99, features: ['Personal Trainer', 'Nutrition Plan', 'Physiotherapy', 'Elite Lounge'], popular: false }
+                ],
+                calculateBMI() {
+                    if (this.height > 0 && this.weight > 0) {
+                        const h = this.height / 100;
+                        this.bmiResult = (this.weight / (h * h)).toFixed(1);
+                        if (this.bmiResult < 18.5) this.bmiStatus = 'Underweight';
+                        else if (this.bmiResult < 25) this.bmiStatus = 'Healthy';
+                        else if (this.bmiResult < 30) this.bmiStatus = 'Overweight';
+                        else this.bmiStatus = 'Obese';
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
